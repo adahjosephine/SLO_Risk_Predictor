@@ -122,6 +122,12 @@ with c2:
 
 left, right = st.columns([1, 1])
 
+st.subheader("Feature Importance")
+fig, ax = plt.subplots(figsize=(10, 3.5))
+ax.barh(imp["Feature"], imp["Importance"])
+ax.set_xlabel("Permutation importance")
+st.pyplot(fig, use_container_width=True)
+
 with left:
     st.subheader("Published Zambia Dataset")
     st.dataframe(df, use_container_width=True)
