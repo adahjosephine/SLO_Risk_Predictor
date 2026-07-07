@@ -4,12 +4,12 @@
 
 The goal is to create a screening tool (Proof-of-concept) that could estimate ESG supply-chain risk for any mine site on Earth, without a bespoke expert panel, using only open source data. It combines insights from the reference literature sources.
 
-Sarkheil et al.(2026) show *machine learning can turn many correlated ESG indicators into an explainable, transferable risk score*, but their indicators are assembled by expert panels — expensive, slow, and hard to replicate at the hundreds of mine sites that make up a real critical-mineral supply chain. Heydari et al.(2026) show that *open, free, global geospatial datasets can proxy for many of those same indicators* (population exposure, infrastructure access, deforestation, hydrological connectivity) without an expert panel — but they stop at descriptive scoring and don't use ML to learn, generalize, or predict from that data.
+Sarkheil et al.(2026) show *machine learning can turn many correlated ESG indicators into an explainable, transferable risk score*, but their indicators are assembled by expert panels, thus expensive, slow, and hard to replicate at the hundreds of mine sites that make up a real critical-mineral supply chain. Heydari et al.(2026) show that *open, free, global geospatial datasets can proxy for many of those same indicators* (population exposure, infrastructure access, deforestation, hydrological connectivity) without an expert panel; but they stopped at descriptive scoring and did  use ML to learn, generalise, or predict risk from the data.
 
 Sources: 
 -- Sarkheil, H., Salahjou, T. and Hashemi, A. (2026) ‘A robust hybrid machine learning framework for multidimensional ESG assessment in critical mineral supply chains: The case of cobalt mining’, Results in Engineering, 29, Article 109501. Available at: https://doi.org/10.1016/j.rineng.2026.109501
 
--- Heydari, M., Noskov, A., Cervantes Barron, K., Ciftci, M.M., Andrieu, B., Chabala, R.M., Matokwani, M., Serrenho, A.C. and Cullen, J.M. (2026) Toward responsible mining: Linking ESG strategies with spatial analysis in Zambia's copper mining industry. The Extractive Industries and Society, 27, Article 101908. https://doi.org/10.1016/j.exis.2026.101908
+-- Heydari, M., Noskov, A., Cervantes Barron, K., Ciftci, M.M., Andrieu, B., Chabala, R.M., Matokwani, M., Serrenho, A.C. and Cullen, J.M. (2026). Toward responsible mining: Linking ESG strategies with spatial analysis in Zambia's copper mining industry. The Extractive Industries and Society, 27, Article 101908. https://doi.org/10.1016/j.exis.2026.101908
 
 
 ---
