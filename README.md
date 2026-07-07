@@ -1,4 +1,4 @@
-# SLO Risk Predictor 
+# Social-License-to-Operate (SLO) Risk Predictor 
 
 # ESG-Driven Supply Chain Risk in Critical Minerals: Synthesis and an ML Proof-of-Concept
 
@@ -124,6 +124,8 @@ by the same open-data infrastructure this POC already uses.
 
 **Limitation:** 10 mine sites are nowhere near enough data to train a trustworthy classifier. This is a proof of *pipeline*, not a proof of *accuracy*. The real value demonstrated here is that the feature-engineering approach (rank-normalized, population-adjusted, all derived from free global datasets) is mechanically ready to scale. Both papers converge on exactly the next step needed: Sarkheil et al. (2026) explicitly call for retraining on region-specific data as the framework expands to the DRC, Philippines, and Australia; Heydari et al.'s open-data pipeline is precisely how that retraining data could be gathered mine by mine, across all of those geographies. Scaling from n=10 to n=100+ mines (globally, via the same open-data pipeline) is the natural next step and would very likely change both the classification accuracy and the feature-importance ranking meaningfully.
 
+**Link to streamlit app:** https://social-vulnerability-risk-predictor-esg.streamlit.app/
+
 **Path to production**
 ```
 mine coordinates (public company disclosures / S&P-type registries)
@@ -144,4 +146,4 @@ ASTER GDEM + hydrology       → elevation, flow-accumulation to protected areas
    per-site SLO / environmental risk tier + SHAP-based explanation
 ```
 
-**AI Use**: AI was used to synthesize the research papers and aided the proof-of-concept coding
+**AI Use Acknowledgement**: AI was used to synthesize the research papers and aided the proof-of-concept coding
