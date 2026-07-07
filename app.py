@@ -33,6 +33,11 @@ data = {
 df = pd.DataFrame(data)
 df["pop_log"] = np.log1p(df["Population_k"])
 
+#------------------------------------------------------
+#2. Derive risk tiers from the composite score (paper's own scoring logic:
+#    lower composite score = higher social vulnerability = higher SLO risk)
+#------------------------------------------------------
+
 def risk(score):
     if score <= 3.4:
         return "High"
@@ -41,8 +46,14 @@ def risk(score):
     return "Low"
 
 df["Risk"] = df["Composite_Score"].apply(risk)
-
 features=["Buildings","Roads","Amenities","Education","Health","pop_log"]
+
+# ---------------------------------------------------------------------------
+# 3. Regression: predict the continuous composite score
+#    (Leave-One-Out CV, mirroring Sarkheil et al.'s LOOCV protocol for
+#    small-n ESG datasets)
+# ---------------------------------------------------------------------------
+
 X=df[features]
 y=df["Composite_Score"]
 yc=df["Risk"]
@@ -55,7 +66,9 @@ def train():
     reg_pred=cross_val_predict(reg,X,y,cv=loo)
     mae=mean_absolute_error(y,reg_pred)
     rho,p=spearmanr(y,reg_pred)
-
+#-----------------------------------------------------------------------
+# 4. Classification: predict the risk tier (High/Medium/Low)
+# ----------------------------------------------------------------------
     clf=RandomForestClassifier(n_estimators=300,max_depth=3,random_state=42)
     cls_pred=cross_val_predict(clf,X,yc,cv=loo)
     acc=accuracy_score(yc,cls_pred)
@@ -63,7 +76,11 @@ def train():
 
     reg.fit(X,y)
     clf.fit(X,yc)
-
+    
+#------------------------------------------------------------------------------
+# 5. Feature importance (permutation importance on full-fit model, since
+#    n is too small for a held-out importance split)
+# -----------------------------------------------------------------------------
     perm=permutation_importance(clf,X,yc,n_repeats=30,random_state=42)
     imp=pd.DataFrame({"Feature":features,
                       "Importance":perm.importances_mean}).sort_values("Importance")
@@ -71,6 +88,10 @@ def train():
     return reg,clf,mae,rho,p,acc,cm,imp
 
 reg,clf,mae,rho,p,acc,cm,imp=train()
+
+#--------------------------------------------------------------------------
+#Streamlit App display
+# -------------------------------------------------------------------------
 
 st.title("Social License to Operate (SLO) Risk Predictor")
 st.write("Open-data proof-of-concept trained on published Zambia mine scores.")
