@@ -96,55 +96,57 @@ reg,clf,mae,rho,p,acc,cm,imp=train()
 st.title("Social License to Operate (SLO) Risk Predictor")
 st.write("Open-data proof-of-concept trained on published Zambia mine scores.")
 
-c1,c2=st.columns(2)
+c1, c2 = st.columns(2)
 with c1:
-    st.subheader("Validation")
-    st.metric("LOOCV MAE",f"{mae:.2f}")
-    st.metric("Spearman ρ",f"{rho:.2f}")
-    st.metric("Classification Accuracy",f"{acc:.0%}")
+    st.subheader("Validation (Leave-One-Out CV, n=10)")
+    st.metric("LOOCV MAE", f"{mae:.2f}", help="Mean absolute error on composite score, scale 0–9")
+    st.metric("Spearman ρ", f"{rho:.2f}", help="Rank correlation between predicted and actual score")
+    st.metric("Classification Accuracy", f"{acc:.0%}",
+               help="3-tier accuracy vs. 40% majority-class baseline")
     st.caption(f"Spearman p-value = {p:.3f}")
+    if acc < 0.40:
+        st.caption("🔻 Below the majority-class baseline — with only 10 mines, discrete "
+                   "tiering is not yet reliable. Rank ordering (ρ) is the more trustworthy signal here.")
 with c2:
     st.subheader("Confusion Matrix")
-    st.dataframe(pd.DataFrame(cm,index=["High","Medium","Low"],columns=["High","Medium","Low"]))
+    cm_df = pd.DataFrame(cm, index=["High","Medium","Low"], columns=["High","Medium","Low"])
+    fig_cm, ax_cm = plt.subplots(figsize=(3.5,3))
+    im = ax_cm.imshow(cm_df, cmap="Blues")
+    ax_cm.set_xticks(range(3)); ax_cm.set_xticklabels(cm_df.columns)
+    ax_cm.set_yticks(range(3)); ax_cm.set_yticklabels(cm_df.index)
+    for i in range(3):
+        for j in range(3):
+            ax_cm.text(j, i, cm_df.iloc[i,j], ha="center", va="center")
+    ax_cm.set_xlabel("Predicted"); ax_cm.set_ylabel("Actual")
+    st.pyplot(fig_cm)
 
-st.subheader("Feature Importance")
-fig,ax=plt.subplots(figsize=(6,3.5))
-ax.barh(imp["Feature"],imp["Importance"])
-ax.set_xlabel("Permutation importance")
-st.pyplot(fig)
-
-left,right=st.columns([1,1])
+left, right = st.columns([1, 1])
 
 with left:
     st.subheader("Published Zambia Dataset")
-    st.dataframe(df)
+    st.dataframe(df, use_container_width=True)
     st.download_button("Download Dataset",
                        df.to_csv(index=False),
                        "zambia_dataset.csv",
                        "text/csv")
-
 with right:
     st.subheader("Transferability Screen (Hypothetical DRC Site)")
-    b=st.slider("Buildings",0,9,2)
-    r=st.slider("Roads",0,9,3)
-    a=st.slider("Amenities",0,9,1)
-    e=st.slider("Education",0,9,2)
-    h=st.slider("Health",0,9,1)
-    pop=st.slider("Population (thousand)",1,200,15)
-
-    inp=pd.DataFrame([[b,r,a,e,h,np.log1p(pop)]],columns=features)
-
-    score=reg.predict(inp)[0]
-    tier=clf.predict(inp)[0]
-    probs=dict(zip(clf.classes_,clf.predict_proba(inp)[0]))
-
-    st.metric("Predicted Composite Score",f"{score:.2f}/9")
-    if tier=="High":
+    b = st.slider("Buildings", 0, 9, 2)
+    r = st.slider("Roads", 0, 9, 3)
+    a = st.slider("Amenities", 0, 9, 1)
+    e = st.slider("Education", 0, 9, 2)
+    h = st.slider("Health", 0, 9, 1)
+    pop = st.slider("Population (thousand)", 1, 200, 15)
+    inp = pd.DataFrame([[b, r, a, e, h, np.log1p(pop)]], columns=features)
+    score = reg.predict(inp)[0]
+    tier = clf.predict(inp)[0]
+    probs = dict(zip(clf.classes_, clf.predict_proba(inp)[0]))
+    st.metric("Predicted Composite Score", f"{score:.2f}/9")
+    if tier == "High":
         st.error("HIGH SLO DISRUPTION RISK")
-    elif tier=="Medium":
+    elif tier == "Medium":
         st.warning("MEDIUM SLO DISRUPTION RISK")
     else:
         st.success("LOW SLO DISRUPTION RISK")
-
     st.write("Class probabilities")
-    st.json({k:round(float(v),2) for k,v in probs.items()})
+    st.json({k: round(float(v), 2) for k, v in probs.items()})
