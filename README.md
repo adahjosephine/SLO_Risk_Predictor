@@ -57,7 +57,7 @@ I picked **community / social-license-to-operate (SLO) disruption risk** for the
 - Derived a 3-tier risk label (High/Medium/Low) from the paper's own composite score.
 - Trained a `RandomForestRegressor` and `RandomForestClassifier` with **Leave-One-Out Cross-Validation**. This is the same validation protocol Sarkheil et al.(2026) use for their small ESG dataset, chosen for the same reason (n=10 is too small for a train/test split).
 - Computed permutation feature importance.
-- Ran a proof-of-concept "screen a new, unaudited site" scenario using only the same five open-data-derivable inputs, applied to an illustrative DRC cobalt-mining-area profile — directly testing the cross-commodity, cross-country transferability that both papers argue for.
+- Ran a proof-of-concept "screen a new, unaudited site" scenario using only the same five open-data-derivable inputs, applied to an illustrative DRC cobalt-mining-area profile; directly testing the cross-commodity, cross-country transferability that both papers argue for.
 
 ## Interpreting the results
 
@@ -122,7 +122,7 @@ screening tool; proven feasible as a pipeline, not yet proven valid as a predict
 Closing that gap requires real disruption-event labels and more sites, both enabled
 by the same open-data infrastructure this POC already uses.
 
-**Limitation:** 10 mine sites are nowhere near enough data to train a trustworthy classifier. This is a proof of *pipeline*, not a proof of *accuracy*. The real value demonstrated here is that the feature-engineering approach (rank-normalized, population-adjusted, all derived from free global datasets) is mechanically ready to scale. Both papers converge on exactly the next step needed: Sarkheil et al. (2026) explicitly call for retraining on region-specific data as the framework expands to the DRC, Philippines, and Australia; Heydari et al.'s open-data pipeline is precisely how that retraining data could be gathered mine by mine, across all of those geographies. Scaling from n=10 to n=100+ mines (globally, via the same open-data pipeline) is the natural next step and would very likely change both the classification accuracy and the feature-importance ranking meaningfully.
+**Limitation:** 10 mine sites are nowhere near enough data to train a trustworthy classifier. This is a proof of *pipeline*, not a proof of *accuracy*. The real value demonstrated here is that the feature-engineering approach (rank-normalized, population-adjusted, all derived from free global datasets) is mechanically ready to scale. Both papers converge on exactly the next step needed: Sarkheil et al. (2026) explicitly call for retraining on region-specific data as the framework expands to the DRC, Philippines, and Australia; Heydari et al.'s (2026) open-data pipeline is precisely how that retraining data could be gathered mine by mine, across all of those geographies. Scaling from n=10 to n=100+ mines (globally, via the same open-data pipeline) is the natural next step and would very likely change both the classification accuracy and the feature-importance ranking meaningfully.
 
 **Link to streamlit app:** https://social-vulnerability-risk-predictor-esg.streamlit.app/
 
