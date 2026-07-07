@@ -59,11 +59,53 @@ I picked **community / social-license-to-operate (SLO) disruption risk** for the
 - Computed permutation feature importance.
 - Ran a proof-of-concept "screen a new, unaudited site" scenario using only the same five open-data-derivable inputs, applied to an illustrative DRC cobalt-mining-area profile — directly testing the cross-commodity, cross-country transferability that both papers argue for.
 
-**Results:**
-- LOOCV **rank correlation** between predicted and actual composite score: **Spearman ρ = 0.65 (p = 0.043)** — the model recovers *relative* ordering of mines moderately well.
-- LOOCV **3-class tier accuracy: 30%**, which is *below* the 40% majority-class baseline. With only 10 labeled sites, discrete High/Medium/Low classification is not yet reliable.
-- Feature importance (see `feature_importance.png`) ranks **amenities and health-facility distance** and **population** as the strongest drivers in this small sample, broadly consistent with Heydari et al.'s narrative that infrastructure access, not raw population size, differentiates newer, better-planned mines (e.g., Trident) from legacy Copperbelt sites (e.g., Mufulira).
-- On the illustrative new DRC site (sparse-mapped infrastructure, moderate population), the model predicts **"High risk"** with 84% class probability; a sensible directional result given deliberately low infrastructure inputs, though it should be read as a demo of the pipeline, not a real assessment of any actual site.
+## Interpreting the results
+
+**Validation metrics.** LOOCV MAE (1.07 on a 0–9 scale) and Spearman ρ (0.65, p=0.043)
+indicate the model can moderately recover the *relative ordering* of mines by risk.
+Classification accuracy into High/Medium/Low tiers (30%) falls *below* the 40%
+majority-class baseline — with only 10 labeled sites, discrete risk tiering is not
+statistically supportable yet, even though rank-ordering holds up reasonably well.
+**Takeaway: use the continuous score, not the tier, until more sites are added.**
+
+**Feature importance.** Buildings and Education dominate; Population, Health, and
+Roads contribute close to nothing. This is *not* evidence that building density and
+school access drive real community disruption risk. The prediction target (composite
+score) is itself constructed as a rank-average of these same six inputs, so this chart
+shows which of the scoring formula's own ingredients happened to carry the most
+separating signal across these 10 specific mines, not a discovered real-world driver.
+Buildings and Education likely dominate because they varied the most cleanly across
+the sample; Population/Health/Roads didn't add unique separating information once
+those two were already used.
+
+**Transferability screen.** The hypothetical-site panel demonstrates the intended
+*use case* — screening an unaudited site using only open-data-derivable inputs,
+without an expert panel, rather than a validated prediction. Predicted risk for the
+illustrative DRC profile (High, ~84% confidence) is a sensible directional result given
+deliberately low input values, and nothing more.
+
+## So what — the actual contribution
+
+This POC does not discover a new risk driver, and it does not validate that spatial/
+infrastructure openness predicts real disruption events. What it does show:
+
+1. **A working, reusable pipeline**: open-data-style features feeds into LOOCV model that feeds into
+   per-site risk score, and then new-site screening. This mirrors the validation discipline
+   (LOOCV) the source literature itself uses for small ESG datasets.
+2. **A concrete methodological trap**, worth documenting for anyone extending this
+   work: constructing an ML target from the same indicators used as features produces
+   internally consistent but circular results. Any future version must label mines
+   against a real outcome (strikes, protests, permit suspensions) rather than a
+   hand-built composite score.
+3. **A quantitative argument for why tiering fails before ranking does** at small n —
+   useful for anyone deciding whether to build a categorical "risk tier" product on a
+   comparably small ESG dataset.
+
+**Bottom line:** this is a template for how Sarkheil et al.'s (2026) ML methodology and
+Heydari et al.'s (2026) open-data feature layer could be combined into a predictive
+screening tool; proven feasible as a pipeline, not yet proven valid as a predictor.
+Closing that gap requires real disruption-event labels and more sites, both enabled
+by the same open-data infrastructure this POC already uses.
 
 **limitation:** 10 mine sites are nowhere near enough data to train a trustworthy classifier. This is a proof of *pipeline*, not a proof of *accuracy*. The real value demonstrated here is that the feature-engineering approach (rank-normalized, population-adjusted, all derived from free global datasets) is mechanically ready to scale. Both papers converge on exactly the next step needed: Sarkheil et al. (2026) explicitly call for retraining on region-specific data as the framework expands to the DRC, Philippines, and Australia; Heydari et al.'s open-data pipeline is precisely how that retraining data could be gathered mine by mine, across all of those geographies. Scaling from n=10 to n=100+ mines (globally, via the same open-data pipeline) is the natural next step and would very likely change both the classification accuracy and the feature-importance ranking meaningfully.
 
