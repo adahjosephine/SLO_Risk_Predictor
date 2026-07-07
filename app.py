@@ -93,10 +93,26 @@ reg,clf,mae,rho,p,acc,cm,imp=train()
 #Streamlit App display
 # -------------------------------------------------------------------------
 
+st.markdown("""
+<style>
+.block-container {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    max-width: 1300px;
+}
+h1 { font-size: 2.3rem !important; margin-bottom: 0.2rem !important; }
+h3 { font-size: 1.35rem !important; margin-top: 0.6rem !important; margin-bottom: 0.6rem !important; }
+[data-testid="stMetricValue"] { font-size: 1.6rem !important; }
+[data-testid="stMetricLabel"] { font-size: 0.95rem !important; }
+[data-testid="stVerticalBlock"] > div { gap: 0.5rem; }
+</style>
+""", unsafe_allow_html=True)
+
 st.title("Social License to Operate (SLO) Risk Predictor")
 st.write("Open-data proof-of-concept trained on published Zambia mine scores.")
 
-c1, c2 = st.columns(2)
+c1, c2 = st.columns(2, gap="medium")
+
 with c1:
     st.subheader("Validation (Leave-One-Out CV, n=10)")
     st.metric("LOOCV MAE", f"{mae:.2f}", help="Mean absolute error on composite score, scale 0–9")
@@ -107,30 +123,38 @@ with c1:
     if acc < 0.40:
         st.caption("🔻 Below the majority-class baseline — with only 10 mines, discrete "
                    "tiering is not yet reliable. Rank ordering (ρ) is the more trustworthy signal here.")
+
 with c2:
     st.subheader("Confusion Matrix")
     cm_df = pd.DataFrame(cm, index=["High","Medium","Low"], columns=["High","Medium","Low"])
-    fig_cm, ax_cm = plt.subplots(figsize=(3.5,3))
-    im = ax_cm.imshow(cm_df, cmap="Blues")
-    ax_cm.set_xticks(range(3)); ax_cm.set_xticklabels(cm_df.columns)
-    ax_cm.set_yticks(range(3)); ax_cm.set_yticklabels(cm_df.index)
+    fig_cm, ax_cm = plt.subplots(figsize=(5,3.6))
+    ax_cm.imshow(cm_df, cmap="Blues")
+    ax_cm.set_xticks(range(3)); ax_cm.set_xticklabels(cm_df.columns, fontsize=11)
+    ax_cm.set_yticks(range(3)); ax_cm.set_yticklabels(cm_df.index, fontsize=11)
     for i in range(3):
         for j in range(3):
-            ax_cm.text(j, i, cm_df.iloc[i,j], ha="center", va="center")
-    ax_cm.set_xlabel("Predicted"); ax_cm.set_ylabel("Actual")
-    st.pyplot(fig_cm)
-
-left, right = st.columns([1, 1])
+            val = cm_df.iloc[i,j]
+            ax_cm.text(j, i, val, ha="center", va="center", fontsize=13,
+                       color="white" if val > cm_df.values.max()/2 else "black")
+    ax_cm.set_xlabel("Predicted", fontsize=11)
+    ax_cm.set_ylabel("Actual", fontsize=11)
+    fig_cm.tight_layout()
+    st.pyplot(fig_cm, use_container_width=True)
 
 st.subheader("Feature Importance")
-fig, ax = plt.subplots(figsize=(10, 3.5))
-ax.barh(imp["Feature"], imp["Importance"])
-ax.set_xlabel("Permutation importance")
+fig, ax = plt.subplots(figsize=(11, 3))
+ax.barh(imp["Feature"], imp["Importance"], color="#2f6f5e")
+ax.set_xlabel("Permutation importance", fontsize=11)
+ax.tick_params(labelsize=11)
+fig.tight_layout()
 st.pyplot(fig, use_container_width=True)
 
+st.divider()
+
+left, right = st.columns([1, 1], gap="medium")
 with left:
     st.subheader("Published Zambia Dataset")
-    st.dataframe(df, use_container_width=True)
+    st.dataframe(df, use_container_width=True, height=390)
     st.download_button("Download Dataset",
                        df.to_csv(index=False),
                        "zambia_dataset.csv",
